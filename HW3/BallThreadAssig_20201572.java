@@ -20,32 +20,33 @@ public class BallThreadAssig_20201572 extends Frame implements ActionListener{
 	
 	public void actionPerformed(ActionEvent evt){  	
 		if (evt.getActionCommand() == "Start"){  	//adds 5 balls
-			//Ball b = new Ball(canvas, canvas.getWidth() / 2 + 16, canvas.getHeight() / 2 + 16, 2, 2, 16);
-         	//b.start();
-         	//balls.add(b);
-         	//b = new Ball(canvas, canvas.getWidth() / 2 - 16, canvas.getHeight() / 2 + 16, -2, 2, 16);
-         	//b.start();
-         	//balls.add(b);
-         	//b = new Ball(canvas, canvas.getWidth() / 2, canvas.getHeight() / 2 - 16, 0, -2, 16);
-         	//b.start();
-         	//balls.add(b);
-         	Ball b = new Ball(canvas, canvas.getWidth() / 2 + 16, canvas.getHeight() / 2, 2, 0, 16);
-         	b.start();
-         	balls.add(b);
-         	b = new Ball(canvas, canvas.getWidth() / 2 - 16, canvas.getHeight() / 2, -2, 0, 16);
-         	b.start();
-         	balls.add(b);
+			Ball b1 = new Ball(canvas, canvas.getWidth() / 2 + 16, canvas.getHeight() / 2 + 18, 1, 1, 16); 
+         	b1.start();
+         	balls.add(b1);
+         	Ball b2 = new Ball(canvas, canvas.getWidth() / 2 - 16, canvas.getHeight() / 2 + 18, -1, 1, 16);
+         	b2.start();
+         	balls.add(b2);
+         	Ball b3 = new Ball(canvas, canvas.getWidth() / 2, canvas.getHeight() / 2 - 16, 0, -1, 16);
+         	b3.start();
+         	balls.add(b3);
+         	Ball b4 = new Ball(canvas, canvas.getWidth() / 2 + 16, canvas.getHeight() / 2, 1, 0, 16); 
+         	b4.start();
+         	balls.add(b4);
+         	Ball b5 = new Ball(canvas, canvas.getWidth() / 2 - 16, canvas.getHeight() / 2, -1, 0, 16);
+         	b5.start();
+         	balls.add(b5);
          	this.StartBallLoop();
-      	}
+		}
    	}
 	
 	//Loop until all balls disappear
 	public void StartBallLoop() {
 		while (!balls.isEmpty()) {
 			for(int i = 0; i < balls.size(); i++) {
-				//if (balls.get(i).isAlive()) {								//if current ball is still active
-					for (int j = i+1; j < balls.size(); j++) {
-						//if (balls.get(j).isAlive()) {
+				if (balls.get(i).isAlive()) {
+					for (int j = 0; j < balls.size(); j++) {
+						if(balls.get(j) == balls.get(i)) continue;
+						else if (balls.get(j).isAlive()) {
 							if (BallCollided(balls.get(i), balls.get(j))) {
 								balls.get(i).isCollided = true;
 								balls.get(j).isCollided = true;
@@ -69,18 +70,12 @@ public class BallThreadAssig_20201572 extends Frame implements ActionListener{
 								balls.remove(j);
 								break;
 							}
-						//}
+						}
 					}
-					break;
-					//if (!balls.get(i).isAlive()) {
-					//	balls.remove(i);
+					//if (i != 0)
 					//	i--;
-					//}
-				//}
-				//else {
-				//	balls.remove(i);
-				//	i--;
-				//}
+					//break;
+				}	
 			}
 		}
 	}
@@ -107,23 +102,23 @@ public class BallThreadAssig_20201572 extends Frame implements ActionListener{
 	
 	
 	public void HandleHorizontalCollision(Ball r, Ball l) {	//r is in right side than l
-		if(r.diameter > 1) {
-			Ball b = new Ball(canvas, (r.x + l.x)/2 + r.diameter/4 + 1, 
-					(r.y + l.y)/2 - r.diameter/4 - 1, 2, -2, r.diameter/2);
+		if(r.diameter > 2) {
+			Ball b = new Ball(canvas, (r.x + l.x)/2 + r.diameter/2 + 1, 
+					(r.y + l.y)/2 - r.diameter/2 - 1, 1, -1, r.diameter/2);
 			b.start();
 			balls.add(b);
 			b = new Ball(canvas, (r.x + l.x)/2 + r.diameter/4 + 1, 
-					(r.y + l.y)/2 + r.diameter/4 + 1, 2, 2, r.diameter/2);
+					(r.y + l.y)/2 + r.diameter/2 + 1, 1, 1, r.diameter/2); //collides immediately with -1 -1?
 			b.start();
 			balls.add(b);
 		}
-		if(l.diameter > 1) {
-			Ball b = new Ball(canvas, (r.x + l.x)/2 - l.diameter/4 - 1, 
-					(r.y + l.y)/2 - l.diameter/4 - 1, -2, -2, l.diameter/2);
+		if(l.diameter > 2) {
+			Ball b = new Ball(canvas, (r.x + l.x)/2 - l.diameter/2 - 1, 
+					(r.y + l.y)/2 - l.diameter/2 - 1, -1, -1, l.diameter/2); //collides immediately with 1 1?
 			b.start();
 			balls.add(b);
-			b = new Ball(canvas, (r.x + l.x)/2 - l.diameter/4 - 1, 
-					(r.y + l.y)/2 + l.diameter/4 + 1, -2, 2, l.diameter/2);
+			b = new Ball(canvas, (r.x + l.x)/2 - l.diameter/2 - 1, 
+					(r.y + l.y)/2 + l.diameter/2 + 1, -1, 1, l.diameter/2);
 			b.start();
 			balls.add(b);
 		}
@@ -131,23 +126,23 @@ public class BallThreadAssig_20201572 extends Frame implements ActionListener{
 	
 	
 	public void HandleVerticalCollision(Ball r, Ball l) {	//r is higher than l
-		if(r.diameter > 1) {
-			Ball b = new Ball(canvas, (r.x + l.x)/2 - r.diameter/4 - 1, 
-					(r.y + l.y)/2 - r.diameter/4 - 1, -2, -2, r.diameter/2);
+		if(r.diameter > 2) {
+			Ball b = new Ball(canvas, (r.x + l.x)/2 - r.diameter/2 - 1, 
+					(r.y + l.y)/2 - r.diameter/2 - 1, -1, -1, r.diameter/2);
 			b.start();
 			balls.add(b);
-			b = new Ball(canvas, (r.x + l.x)/2 + r.diameter/4 + 1, 
-					(r.y + l.y)/2 - r.diameter/4 - 1, 2, -2, r.diameter/2);
+			b = new Ball(canvas, (r.x + l.x)/2 + r.diameter/2 + 1, 
+					(r.y + l.y)/2 - r.diameter/2 - 1, 1, -1, r.diameter/2);
 			b.start();
 			balls.add(b);
 		}
-		if(l.diameter > 1) {
-			Ball b = new Ball(canvas, (r.x + l.x)/2 - l.diameter/4 - 1, 
-					(r.y + l.y)/2 + l.diameter/4 + 1, -2, 2, l.diameter/2);
+		if(l.diameter > 2) {
+			Ball b = new Ball(canvas, (r.x + l.x)/2 - l.diameter/2 - 1, 
+					(r.y + l.y)/2 + l.diameter/2 + 1, -1, 1, l.diameter/2);
 			b.start();
 			balls.add(b);
-			b = new Ball(canvas, (r.x + l.x)/2 + l.diameter/4 + 1, 
-					(r.y + l.y)/2 + l.diameter/4 + 1, 2, 2, l.diameter/2);
+			b = new Ball(canvas, (r.x + l.x)/2 + l.diameter/2 + 1, 
+					(r.y + l.y)/2 + l.diameter/2 + 1, 1, 1, l.diameter/2);
 			b.start();
 			balls.add(b);
 		}
@@ -201,11 +196,11 @@ class Ball extends Thread{
   	}
 	
 	public void run(){  
-		draw();
-  		while (!isCollided){  	
+  		while (!isCollided){  
+  			draw();
   			move();
      		try { 
-     			Thread.sleep(20); 
+     			Thread.sleep(10); 
      		} 
      		catch(InterruptedException e) {}
      	}
@@ -217,5 +212,11 @@ class Ball extends Thread{
 		
 		
 	}
+}
+
+class WindowDestroyer extends WindowAdapter {
+    public void windowClosing(WindowEvent e) {
+        System.exit(0);
+    }
 }
 
