@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class BallThreadAssig_20201572 extends Frame implements ActionListener{  	 
 	private Canvas canvas; 
-	public ArrayList<Ball> balls;
+	private ArrayList<Ball> balls;
 	
 	public BallThreadAssig_20201572(){  	
 		canvas = new Canvas();
@@ -20,16 +20,16 @@ public class BallThreadAssig_20201572 extends Frame implements ActionListener{
 	
 	public void actionPerformed(ActionEvent evt){  	
 		if (evt.getActionCommand() == "Start"){  	//adds 5 balls
-			Ball b = new Ball(canvas, canvas.getWidth() / 2 + 16, canvas.getHeight() / 2 + 16, 2, 2, 16);
-         	b.start();
-         	balls.add(b);
-         	b = new Ball(canvas, canvas.getWidth() / 2 - 16, canvas.getHeight() / 2 + 16, -2, 2, 16);
-         	b.start();
-         	balls.add(b);
-         	b = new Ball(canvas, canvas.getWidth() / 2, canvas.getHeight() / 2 - 16, 0, -2, 16);
-         	b.start();
-         	balls.add(b);
-         	b = new Ball(canvas, canvas.getWidth() / 2 + 16, canvas.getHeight() / 2, 2, 0, 16);
+			//Ball b = new Ball(canvas, canvas.getWidth() / 2 + 16, canvas.getHeight() / 2 + 16, 2, 2, 16);
+         	//b.start();
+         	//balls.add(b);
+         	//b = new Ball(canvas, canvas.getWidth() / 2 - 16, canvas.getHeight() / 2 + 16, -2, 2, 16);
+         	//b.start();
+         	//balls.add(b);
+         	//b = new Ball(canvas, canvas.getWidth() / 2, canvas.getHeight() / 2 - 16, 0, -2, 16);
+         	//b.start();
+         	//balls.add(b);
+         	Ball b = new Ball(canvas, canvas.getWidth() / 2 + 16, canvas.getHeight() / 2, 2, 0, 16);
          	b.start();
          	balls.add(b);
          	b = new Ball(canvas, canvas.getWidth() / 2 - 16, canvas.getHeight() / 2, -2, 0, 16);
@@ -43,55 +43,114 @@ public class BallThreadAssig_20201572 extends Frame implements ActionListener{
 	public void StartBallLoop() {
 		while (!balls.isEmpty()) {
 			for(int i = 0; i < balls.size(); i++) {
-				if (balls.get(i).isAlive()) {								//if current ball is still active
+				//if (balls.get(i).isAlive()) {								//if current ball is still active
 					for (int j = i+1; j < balls.size(); j++) {
-						if (balls.get(j).isAlive()) {
+						//if (balls.get(j).isAlive()) {
 							if (BallCollided(balls.get(i), balls.get(j))) {
 								balls.get(i).isCollided = true;
 								balls.get(j).isCollided = true;
-								if(balls.get(i).diameter > 1) {
-									Ball b = new Ball(canvas, (balls.get(i).x + balls.get(j).x)/2 + balls.get(i).diameter / 2 + 1, 
-											(balls.get(i).y + balls.get(j).y)/2 - balls.get(i).diameter / 2 - 1, 2, -2, balls.get(i).diameter / 2);
-									b.start();
-									balls.add(b);
-									b = new Ball(canvas, (balls.get(i).x + balls.get(j).x)/2 + balls.get(i).diameter / 2 + 1, 
-											(balls.get(i).y + balls.get(j).y)/2 + balls.get(i).diameter / 2 + 1, 2, 2, balls.get(i).diameter / 2);
-									b.start();
-									balls.add(b);
+								switch(GetCollisionType(balls.get(i), balls.get(j))) {
+								case 0:{	//horizontal collision
+									if (balls.get(i).x > balls.get(j).x){
+										HandleHorizontalCollision(balls.get(i), balls.get(j));
+									}
+									else HandleHorizontalCollision(balls.get(j), balls.get(i));
+									break;
 								}
-								if(balls.get(j).diameter > 1) {
-									Ball b = new Ball(canvas, (balls.get(i).x + balls.get(j).x)/2 - balls.get(j).diameter / 2 - 1, 
-											(balls.get(i).y + balls.get(j).y)/2 - balls.get(j).diameter / 2 - 1, -2, -2, balls.get(j).diameter / 2);
-									b.start();
-									balls.add(b);
-									b = new Ball(canvas, (balls.get(i).x + balls.get(j).x)/2 - balls.get(j).diameter / 2 - 1, 
-											(balls.get(i).y + balls.get(j).y)/2 + balls.get(j).diameter / 2 + 1, -2, 2, balls.get(j).diameter / 2);
-									b.start();
-									balls.add(b);
+								case 1:{	//vertical collision
+									if (balls.get(i).y < balls.get(j).y) {
+										HandleVerticalCollision(balls.get(i), balls.get(j));
+									}
+									else HandleVerticalCollision(balls.get(j), balls.get(i));
+									break;
 								}
+								}
+								balls.remove(i);
+								balls.remove(j);
 								break;
 							}
-						}
+						//}
 					}
-					if (!balls.get(i).isAlive()) {
-						balls.remove(i);
-						i--;
-					}
-				}
-				else {
-					balls.remove(i);
-					i--;
-				}
+					break;
+					//if (!balls.get(i).isAlive()) {
+					//	balls.remove(i);
+					//	i--;
+					//}
+				//}
+				//else {
+				//	balls.remove(i);
+				//	i--;
+				//}
 			}
 		}
 	}
 	
-	//returnes true if distance of two ball's center coords are closer than the sum of radius
+	//returns true if distance of two ball's center coords are closer than the sum of radius
 	public boolean BallCollided(Ball a, Ball b) {
-		if (Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)) <= a.diameter / 2 + b.diameter / 2) {
+		if ((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) <= 
+				(a.diameter / 2 + b.diameter / 2) * (a.diameter / 2 + b.diameter / 2)) {
 			return true;
 		}
 		return false;
+	}
+	
+	//returns type of collision depending on difference of coordinates
+	public int GetCollisionType(Ball a, Ball b) {
+		int xDiff = Math.abs(a.x - b.x);
+		int yDiff = Math.abs(a.y - b.y);
+		
+		if(xDiff >= yDiff) {		//collided more horizontally
+			return 0;
+		}
+		else return 1;				//collided more vertically
+	}
+	
+	
+	public void HandleHorizontalCollision(Ball r, Ball l) {	//r is in right side than l
+		if(r.diameter > 1) {
+			Ball b = new Ball(canvas, (r.x + l.x)/2 + r.diameter/4 + 1, 
+					(r.y + l.y)/2 - r.diameter/4 - 1, 2, -2, r.diameter/2);
+			b.start();
+			balls.add(b);
+			b = new Ball(canvas, (r.x + l.x)/2 + r.diameter/4 + 1, 
+					(r.y + l.y)/2 + r.diameter/4 + 1, 2, 2, r.diameter/2);
+			b.start();
+			balls.add(b);
+		}
+		if(l.diameter > 1) {
+			Ball b = new Ball(canvas, (r.x + l.x)/2 - l.diameter/4 - 1, 
+					(r.y + l.y)/2 - l.diameter/4 - 1, -2, -2, l.diameter/2);
+			b.start();
+			balls.add(b);
+			b = new Ball(canvas, (r.x + l.x)/2 - l.diameter/4 - 1, 
+					(r.y + l.y)/2 + l.diameter/4 + 1, -2, 2, l.diameter/2);
+			b.start();
+			balls.add(b);
+		}
+	}
+	
+	
+	public void HandleVerticalCollision(Ball r, Ball l) {	//r is higher than l
+		if(r.diameter > 1) {
+			Ball b = new Ball(canvas, (r.x + l.x)/2 - r.diameter/4 - 1, 
+					(r.y + l.y)/2 - r.diameter/4 - 1, -2, -2, r.diameter/2);
+			b.start();
+			balls.add(b);
+			b = new Ball(canvas, (r.x + l.x)/2 + r.diameter/4 + 1, 
+					(r.y + l.y)/2 - r.diameter/4 - 1, 2, -2, r.diameter/2);
+			b.start();
+			balls.add(b);
+		}
+		if(l.diameter > 1) {
+			Ball b = new Ball(canvas, (r.x + l.x)/2 - l.diameter/4 - 1, 
+					(r.y + l.y)/2 + l.diameter/4 + 1, -2, 2, l.diameter/2);
+			b.start();
+			balls.add(b);
+			b = new Ball(canvas, (r.x + l.x)/2 + l.diameter/4 + 1, 
+					(r.y + l.y)/2 + l.diameter/4 + 1, 2, 2, l.diameter/2);
+			b.start();
+			balls.add(b);
+		}
 	}
 	
 	public static void main(String[] args){  	
@@ -105,10 +164,10 @@ public class BallThreadAssig_20201572 extends Frame implements ActionListener{
 class Ball extends Thread{  	
 	private static Canvas box;
 	private int diameter;
-	private int x = 0;
-	private int y = 0;
-	private int dx = 2;
-	private int dy = 2; 
+	private int x;
+	private int y;
+	private int dx;
+	private int dy; 
 	private boolean isCollided;
 	
 	public Ball(Canvas c, int x, int y, int dx, int dy, int diameter){ 
@@ -141,21 +200,22 @@ class Ball extends Thread{
   		g.dispose();	
   	}
 	
-	public void run(){  	
+	public void run(){  
 		draw();
   		while (!isCollided){  	
   			move();
      		try { 
-     			Thread.sleep(5); 
+     			Thread.sleep(20); 
      		} 
      		catch(InterruptedException e) {}
-     		}  
-  		}
+     	}
+  		Graphics g = box.getGraphics();
+  		g.setColor(box.getBackground());
+  		g.fillOval(x - diameter/2, y - diameter/2, diameter, diameter);
+  		g.dispose();
+  	}
+		
+		
 	}
 }
 
-class WindowDestroyer extends WindowAdapter {
-		public void windowClosing(WindowEvent e) {
-     		System.exit(0);
-     	}
-}
